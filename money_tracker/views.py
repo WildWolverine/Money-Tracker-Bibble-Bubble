@@ -1,15 +1,20 @@
+from dataclasses import fields
+
 from django.contrib.auth import authenticate
 from django.contrib import messages, auth
-from django.http import HttpResponse
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from django.contrib.auth.models import User
 
-from .models import UserProfile
+from .models import UserProfile, Expense
+from .forms import ExpenseForm
 
 
 # Create your views here.
 def get_home(request):
-    return render(request,'home.html')
+    form = ExpenseForm()
+
+    return render(request, 'home.html', {'form': form})
 
 
 def register(request):
@@ -58,3 +63,29 @@ def login(request):
 def logout(request):
     auth.logout(request)
     return redirect('home')
+
+
+@login_required
+def add_expense(request):
+    ExpenseFormSet = ExpenseForm
+    if request.method == 'POST':
+
+        form = ExpenseFormSet(request.POST)
+
+
+        if form.is_valid():
+            expense = form.save(commit=False)
+            expense.user = UserProfile.objects.get(username=request.user.username)
+            try:
+                user_profile = UserProfile.objects.get(username=request.user.username)
+
+                expense.username = user_profile
+                expense.save()
+                return redirect('home')
+            except UserProfile.DoesNotExist:
+                messages.error(request, "User profile not found. Please complete your profile.")
+                redirect('home')
+        else:
+            form = ExpenseFormSet()
+
+    return render(request, 'home.html', {'form': form})

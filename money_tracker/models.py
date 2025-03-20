@@ -11,10 +11,17 @@ class UserProfile(models.Model):
 
 
 class Expense(models.Model):
+    CATEGORY_CHOICES = [
+        ('food', 'Food'),
+        ('cloth', 'Clothing'),
+        ('transport', 'Transport'),
+        ('entertainment', 'Entertainment'),
+        ('other', 'Other'),
+    ]
     user = models.ForeignKey(UserProfile,on_delete=models.CASCADE)
-    category = models.CharField()
+    category = models.CharField(max_length=20, choices=CATEGORY_CHOICES)
     amount = models.DecimalField(max_digits=55,decimal_places=2)
-    description = models.TextField(null=True,blank=True)
+    expense_name = models.CharField(null=True,blank=True)
     date = models.DateField()
 
     def __str__(self):

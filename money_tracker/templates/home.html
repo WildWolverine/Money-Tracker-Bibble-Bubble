@@ -38,6 +38,15 @@
         </div>
     </nav>
     <div class="container-fluid d-flex flex-grow-1">
+        <div class="container mt-5">
+            <h2 class="text-center">Add Expense</h2>
+
+            <form action="{%url 'add'%}" method="post" class="p-4 border rounded bg-light">
+                {%csrf_token%}
+                {{ form.as_p}}
+                <button type="submit" class="btn btn-primary">Add Expense</button>
+            </form>
+        </div>
 
     </div>
 </div>
